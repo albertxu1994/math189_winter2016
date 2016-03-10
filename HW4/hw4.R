@@ -32,13 +32,11 @@ predictDensity <- function(linMod, gain) {
 # plot the prediction and confidence intervals
 logGainDensityPlot <- ggplot(avgGauge, aes(x=density, y=logGain)) + 
   geom_point() +
-  geom_smooth(aes(fill="Confidence"), method="lm", fullrange=T, level=0.95, alpha=0.3) +
-  geom_ribbon(aes(y=fit, ymin=lwr, ymax=upr, fill="Prediction"), alpha=0.15) +
+  geom_smooth(method="lm", fullrange=T, level=0.95, se=F) +
+  geom_ribbon(aes(y=fit, ymin=lwr, ymax=upr), alpha=0.15) +
   scale_fill_manual("Interval", values=c("red", "blue")) +
   theme_bw() +
-  labs(x="Density", y="Log Transformed Average Gain", title="Log Transformed Average Gain vs Density") +
-  geom_abline(intercept=yIntercept - qt(.975, df=df)*yInterceptSE, slope=slope + qt(.975, df=df)*slopeSE, colour="red") +
-  geom_abline(intercept=yIntercept + qt(.975, df=df)*yInterceptSE, slope=slope - qt(.975, df=df)*slopeSE, colour="red")
+  labs(x="Density", y="Log Transformed Average Gain", title="Log Transformed Average Gain vs Density")
 ggsave("logGainDensity.png", plot=logGainDensityPlot)
 
 # plot the residuals vs the fitted values
