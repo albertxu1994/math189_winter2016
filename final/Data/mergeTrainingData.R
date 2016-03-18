@@ -1,3 +1,5 @@
+library(reshape2)
+
 # read in training data
 event_type <- read.csv("event_type.csv", header=T, stringsAsFactors=F)
 event_type$event_type <- as.numeric(gsub("event_type ", "", event_type$event_type))
