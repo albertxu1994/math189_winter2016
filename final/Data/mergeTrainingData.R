@@ -30,7 +30,8 @@ train <- train[order(train$id),]
 # merge by id
 mergedCols <- merge(merge(merge(event_type, log_feature, by="id", all=T), resource_type, by="id", all=T), severity_type, by="id", all=T)
 mergedTraining <- merge(train, mergedCols, id="id", all.x=T)
-mergedTraining[, 4:ncol(mergedTraining)][!is.na(mergedTraining[,4:ncol(mergedTraining)])] <- 1
-mergedTraining[, 4:ncol(mergedTraining)][is.na(mergedTraining[,4:ncol(mergedTraining)])] <- 0
+mergedTraining <- mergedTraining[,colSums(is.na(mergedTraining)) < nrow(mergedTraining)] # remove cols that are all NA
+mergedTraining[,4:ncol(mergedTraining)][!is.na(mergedTraining[,4:ncol(mergedTraining)])] <- 1
+mergedTraining[,4:ncol(mergedTraining)][is.na(mergedTraining[,4:ncol(mergedTraining)])] <- 0
 write.table(mergedTraining, file="merged_training.csv", sep=",", row.names=F, col.names=T, quote=F)
 
