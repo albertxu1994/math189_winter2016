@@ -32,6 +32,6 @@ mergedCols <- merge(merge(merge(event_type, log_feature, by="id", all=T), resour
 mergedTraining <- merge(train, mergedCols, id="id", all.x=T)
 mergedTraining <- mergedTraining[,colSums(is.na(mergedTraining)) < nrow(mergedTraining)] # remove cols that are all NA
 mergedTraining[,4:ncol(mergedTraining)][!is.na(mergedTraining[,4:ncol(mergedTraining)])] <- 1
-mergedTraining[,4:ncol(mergedTraining)][is.na(mergedTraining[,4:ncol(mergedTraining)])] <- 0
-write.table(mergedTraining, file="merged_training.csv", sep=",", row.names=F, col.names=T, quote=F)
+#mergedTraining[,4:ncol(mergedTraining)][is.na(mergedTraining[,4:ncol(mergedTraining)])] <- 0
+#write.table(mergedTraining, file="merged_training.csv", sep=",", row.names=F, col.names=T, quote=F)
 
