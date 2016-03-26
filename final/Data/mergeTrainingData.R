@@ -11,7 +11,6 @@ log_feature <- read.csv("log_feature.csv", header=T, stringsAsFactors=F)
 log_feature$log_feature<- as.numeric(gsub("feature ", "", log_feature$log_feature))
 log_feature <- log_feature[order(log_feature$id),]
 log_feature <- dcast(log_feature, id ~ as.character(log_feature) + as.character(volume)) # count (volume field + log_feature) field as one feature
-#log_feature <- dcast(log_feature, id ~ as.character(log_feature)) # ignore volume field
 colnames(log_feature) <- c("id", paste("log_feature_", colnames(log_feature)[2:length(colnames(log_feature))], sep=""))
 
 resource_type <- read.csv("resource_type.csv", header=T, stringsAsFactors=F)

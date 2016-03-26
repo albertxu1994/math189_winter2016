@@ -1,4 +1,5 @@
 library(party)
+library(caret)
 
 # read in test data, and merge it with the data from the other files
 test <- read.csv("test.csv", header=T, stringsAsFactors=F)
@@ -20,7 +21,7 @@ mergedTest <- mergedTest[,commonCols]
 # the fault_severity depends on every variable except fault_severity, id, and location
 frmla <- as.formula(paste("as.factor(fault_severity) ~ ", paste(colnames(mergedTraining)[4:ncol(mergedTraining)], collapse="+"), sep=""))
 
-# get an example of one tree
+# get an example of one tree using all variables
 ct <- ctree(frmla, data=mergedTraining, controls=cforest_control(mincriterion=0, mtry=NULL)) # takes ~10 mins
 png("ct_volume.png", width=3600, height=1000, units="px")
 plot(ct)
@@ -32,4 +33,18 @@ dev.off()
 cf <- cforest(frmla, data=mergedTraining, controls=cforest_control(mincriterion=0, mtry=NULL))
 mergedTest$pred_fault_severity <- predict(cf, newdata=mergedTest) # takes ~12 mins
 write.table(mergedTest, file="results.csv", sep=",", quote=F, col.names=T, row.names=F)
+
+# check results with out of bag error
+oobError <- caret:::cforestStats(cf) # takes ~5 mins
+print(oobError)
+# Accuracy     Kappa
+# 0.6963826 0.3436285
+
+# try to check against another randomForest package
+library(randomForest)
+randForRes <- randomForest(frmla, data=mergedTraining) # takes 2.5 hrs
+randForRes_pred <- predict(randForRes, newdata=mergedTest)
+summary(randForRes_pred)
+#   0     1     2  NA's
+#   1     2     0 11168
 
