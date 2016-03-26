@@ -1,6 +1,6 @@
 library(reshape2)
 
-# read in training data
+# read in training data and clean it up
 event_type <- read.csv("event_type.csv", header=T, stringsAsFactors=F)
 event_type$event_type <- as.numeric(gsub("event_type ", "", event_type$event_type))
 event_type <- event_type[order(event_type$id),]
@@ -10,7 +10,8 @@ colnames(event_type) <- c("id", paste("event_type_", colnames(event_type)[2:leng
 log_feature <- read.csv("log_feature.csv", header=T, stringsAsFactors=F)
 log_feature$log_feature<- as.numeric(gsub("feature ", "", log_feature$log_feature))
 log_feature <- log_feature[order(log_feature$id),]
-log_feature <- dcast(log_feature, id ~ as.character(log_feature))
+log_feature <- dcast(log_feature, id ~ as.character(log_feature) + as.character(volume)) # count (volume field + log_feature) field as one feature
+#log_feature <- dcast(log_feature, id ~ as.character(log_feature)) # ignore volume field
 colnames(log_feature) <- c("id", paste("log_feature_", colnames(log_feature)[2:length(colnames(log_feature))], sep=""))
 
 resource_type <- read.csv("resource_type.csv", header=T, stringsAsFactors=F)
@@ -32,8 +33,12 @@ train <- train[order(train$id),]
 # merge by id
 mergedCols <- merge(merge(merge(event_type, log_feature, by="id", all=T), resource_type, by="id", all=T), severity_type, by="id", all=T)
 mergedTraining <- merge(train, mergedCols, id="id", all.x=T)
-mergedTraining <- mergedTraining[,colSums(is.na(mergedTraining)) < nrow(mergedTraining)] # remove cols that are all NA
+
+# remove cols that are all NA
+mergedTraining <- mergedTraining[,colSums(is.na(mergedTraining)) < nrow(mergedTraining)]
+
+# set all present values to 1, missing values to 0
 mergedTraining[,4:ncol(mergedTraining)][!is.na(mergedTraining[,4:ncol(mergedTraining)])] <- 1
-#mergedTraining[,4:ncol(mergedTraining)][is.na(mergedTraining[,4:ncol(mergedTraining)])] <- 0
-#write.table(mergedTraining, file="merged_training.csv", sep=",", row.names=F, col.names=T, quote=F)
+mergedTraining[,4:ncol(mergedTraining)][is.na(mergedTraining[,4:ncol(mergedTraining)])] <- 0
+write.table(mergedTraining, file="merged_training.csv", sep=",", row.names=F, col.names=T, quote=F)
 
