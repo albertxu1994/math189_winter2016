@@ -85,7 +85,7 @@ frmla <- as.formula(paste("as.factor(fault_severity) ~ ", paste(colnames(mergedT
 
 # get an example of one tree using all variables
 ct <- ctree(frmla, data=mergedTraining, controls=cforest_control(mincriterion=0, mtry=NULL)) # takes ~10 mins
-png("ct_volume.png", width=3600, height=1000, units="px")
+png("../exampleTree.png", width=3600, height=1000, units="px")
 plot(ct)
 dev.off()
 
