@@ -48,3 +48,20 @@ summary(randForRes_pred)
 #   0     1     2  NA's
 #   1     2     0 11168
 
+# compare fault severity fractions between training and test datasets
+comp <- NULL
+comp$test <- summary(mergedTest$pred_fault_severity)
+comp$train <- summary(as.factor(train$fault_severity))
+comp <- as.data.frame(comp)
+comp$level <- rownames(comp)
+comp_frac <- NULL
+comp_frac$test <- comp$test / sum(comp$test)
+comp_frac$train <- comp$train / sum(comp$train)
+comp_frac$level <- comp$level
+comp_frac <- as.data.frame(comp_frac)
+comp_frac_melt <- melt(comp_frac)
+comp_frac_melt$variable <- c("Test", "Test", "Test", "Train", "Train", "Train")
+p_comp_frac <- ggplot(comp_frac_melt, aes(x=level, y=value, fill=variable)) + geom_bar(stat="identity", position="dodge") + theme_bw() + labs(x="Fault Severity", y="Fraction of Cases", fill="Data set", title="Fault Severity Between Data Sets")
+ggsave("p_comp_frac.png")
+
+
